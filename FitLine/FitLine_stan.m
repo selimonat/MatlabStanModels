@@ -3,6 +3,18 @@ function [fit]=FitLine_stan(x,y,x_new,varargin)
 %
 % you have to cd to the folder where the .stan model is located.
 % Y = X*[beta0 beta2]
+%
+% X_NEW is used for predictions.
+%
+% VARARGIN is fed to stan.
+%
+% X and X_new are supposed to have a column of ones.
+%
+% Example usage:
+% fit = FitLine_stan(x,y,x_new,'iter',10000);
+%
+% TO DO/UNDERSTAND
+% 1/ Distribution of R2 looks strange with a very sharp border
 %%
 
 data = struct('x',x,'y',y,'N',size(x,1),'D',size(x,2),'x_new',x_new,'N_new',size(x_new,1));
@@ -36,7 +48,7 @@ hold on
 plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k');
 %plot the upper and lower 5% confidence intervals based on the average parameters
 %of the model.
-plot(x(:,2),[norminv(.975,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1)) ...
+plot(x_new(:,2),[norminv(.975,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1)) ...
 norminv(.025,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1))],'r')
 title('Data and 95% Model');
 
