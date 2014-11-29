@@ -41,18 +41,9 @@ generated quantities {
   for (i in 1:N_new){
     y_new[i] <- normal_rng( x_new[i] * beta, sigma_y);
   }
-  # compute a distribution of r2  
+  # compute a distribution of r2 (http://www.stat.columbia.edu/~gelman/research/published/rsquared.pdf)
   rss <- dot_self( ycenter - xcenter*beta[2] );
   totalss <- dot_self(ycenter);
   #
   R2 <- 1 - rss/totalss;
 }
-
-
-
-
-
-
-
-
-

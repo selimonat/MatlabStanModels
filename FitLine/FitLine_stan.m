@@ -14,7 +14,14 @@ function [fit]=FitLine_stan(x,y,x_new,varargin)
 % fit = FitLine_stan(x,y,x_new,'iter',10000);
 %
 % TO DO/UNDERSTAND
-% 1/ Distribution of R2 looks strange with a very sharp border
+% 1/ Distribution of R2 looks strange with a very sharp border and there
+% are negative values. This is actually discussed in 
+% http://www.stat.columbia.edu/~gelman/research/published/rsquared.pdf
+% The R2 values that is computed here can be also negative, which could
+% arise from situations wherethe model is even worse than the null model.
+% This is possible. Additionally this way of computing the R2 takes into
+% account the uncertainties on the parameter estimates, thus it is an
+% adjusted R2 measure.
 %%
 
 data = struct('x',x,'y',y,'N',size(x,1),'D',size(x,2),'x_new',x_new,'N_new',size(x_new,1));
