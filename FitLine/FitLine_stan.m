@@ -55,8 +55,9 @@ hold on
 plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k');
 %plot the upper and lower 5% confidence intervals based on the average parameters
 %of the model.
-plot(x_new(:,2),[norminv(.975,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1)) ...
-norminv(.025,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1))],'r')
+ci_up   = norminv(.975,x_new*mean(fit.extract.beta)',mean(fit.extract.sigma_y) );
+ci_down = norminv(.025,x_new*mean(fit.extract.beta)',mean(fit.extract.sigma_y));
+plot(x_new(:,2),[ci_up ci_down],'r')
 title('Data and 95% Model');
 %
 subplot(2,3,6)
