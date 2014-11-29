@@ -11,31 +11,36 @@ fit = stan('file','FitLine.stan','data',data,'verbose',true,'iter',400,varargin{
 fit.block();
 %%
 print(fit);
-% % %% plot the parameters
-% % figure;
-% % set(gcf,'position',[680 745 1241 660]);
-% % subplot(2,3,1)
-% % hist(fit.extract.beta(:,1),100)
-% % title('Beta0');
-% % %
-% % subplot(2,3,2)
-% % hist(fit.extract.beta(:,2),100)
-% % title('Beta1');
-% % 
-% % subplot(2,3,3)
-% % plot(fit.extract.beta(:,1),fit.extract.beta(:,2),'o')
-% % title('Beta0 vs. Beta1');
-% % 
-% % subplot(2,3,4)
-% % hist(fit.extract.sigma_y,100)
-% % title('Noise Sigma');
-% % %
-% % subplot(2,3,5)
-% % plot(x(:,2),y,'ko')
-% % hold on
-% % plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k')
-% % title('Data and 95% Model');
-% % %
-% % subplot(2,3,6)
-% % hist(fit.extract.R2,100)
-% % title('R2');
+%% plot the parameters
+figure;
+set(gcf,'position',[680 745 1241 660]);
+subplot(2,3,1)
+hist(fit.extract.beta(:,1),100)
+title('Beta0');
+%
+subplot(2,3,2)
+hist(fit.extract.beta(:,2),100)
+title('Beta1');
+
+subplot(2,3,3)
+plot(fit.extract.beta(:,1),fit.extract.beta(:,2),'o')
+title('Beta0 vs. Beta1');
+
+subplot(2,3,4)
+hist(fit.extract.sigma_y,100)
+title('Noise Sigma');
+%
+subplot(2,3,5)
+plot(x(:,2),y,'ro','markersize',10,'markerfacecolor','r');
+hold on
+plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k');
+%plot the upper and lower 5% confidence intervals based on the average parameters
+%of the model.
+plot(x(:,2),[norminv(.975,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1)) ...
+norminv(.025,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1))],'r')
+title('Data and 95% Model');
+
+%
+subplot(2,3,6)
+hist(fit.extract.R2,100)
+title('R2');
