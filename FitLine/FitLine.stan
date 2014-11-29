@@ -24,9 +24,7 @@ transformed parameters {
   xcenter <- (col(x,2) - mean(col(x,2)));
 }
 
-model {
-  # beta ~ normal(0,1000)
-  # sigma_y ~   
+model {  
   y ~ normal(  x * beta, sigma_y ); // likelihood
 }
 

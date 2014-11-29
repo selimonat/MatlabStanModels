@@ -58,7 +58,6 @@ plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k');
 plot(x_new(:,2),[norminv(.975,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1)) ...
 norminv(.025,x*mean(fit.extract.beta)',repmat(mean(fit.extract.sigma_y),29,1))],'r')
 title('Data and 95% Model');
-
 %
 subplot(2,3,6)
 hist(fit.extract.R2,100)
