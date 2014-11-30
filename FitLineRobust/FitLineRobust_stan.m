@@ -38,22 +38,19 @@ print(fit);
 %% plot the parameters
 figure;
 set(gcf,'position',[680 745 1241 660]);
-subplot(2,3,1)
-hist(fit.extract.beta(:,1),100)
-title('Beta0');
-%
-subplot(2,3,2)
-hist(fit.extract.beta(:,2),100)
-title('Beta1');
-
+subplot(2,3,1);
+MakeHist('beta0',fit.extract.beta(:,1));
+%%
+subplot(2,3,2);
+MakeHist('beta1',fit.extract.beta(:,2));
+%%
 subplot(2,3,3)
 plot(fit.extract.beta(:,1),fit.extract.beta(:,2),'o')
 title('Beta0 vs. Beta1');
-
+%%
 subplot(2,3,4)
-hist(fit.extract.sigma_y,100)
-title('Noise Sigma');
-%
+MakeHist('sigma_y',fit.extract.sigma_y);
+%% data and model
 subplot(2,3,5)
 plot(x(:,2),y,'ro','markersize',10,'markerfacecolor','r');
 hold on
@@ -68,7 +65,16 @@ plot(x_new(:,2),prctile(fit.extract.y_new,[2.5 97.5])','k');
 % % ci_down = norminv(.025,x_new*mean(fit.extract.beta)',mean(fit.extract.sigma_y));
 % % plot(x_new(:,2),[ci_up ci_down],'r');
 title('Data and 95% Model');
-%
+
+%%
 subplot(2,3,6)
-hist(fit.extract.R2,100)
-title('R2');
+MakeHist('R2',fit.extract.R2);
+
+function MakeHist(name,dummy)
+    hist(dummy,100);
+    hold on;
+    [f bins] = ksdensity(dummy);
+    plot(bins,f,'r','linewidth',3);
+    title(sprintf('%s: mode: %.2g, mean: %.2g','bla',mode(dummy),mean(dummy)));
+end
+end
