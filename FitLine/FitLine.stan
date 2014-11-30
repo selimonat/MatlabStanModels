@@ -16,12 +16,6 @@ parameters {
 }
 
 transformed parameters {
-  vector[N] ycenter;
-  vector[N] xcenter;
-
-  # Used to compute r2
-  ycenter <- y - mean(y);
-  xcenter <- (col(x,2) - mean(col(x,2)));
 }
 
 model {  
@@ -40,8 +34,7 @@ generated quantities {
     y_new[i] <- normal_rng( x_new[i] * beta, sigma_y);
   }
   # compute a distribution of r2 (http://www.stat.columbia.edu/~gelman/research/published/rsquared.pdf)
-  rss <- dot_self( ycenter - xcenter*beta[2] );
-  totalss <- dot_self(ycenter);
-  #
+  rss <- dot_self( y - x * beta );
+  totalss <- dot_self(y - mean(y));
   R2 <- 1 - rss/totalss;
 }
