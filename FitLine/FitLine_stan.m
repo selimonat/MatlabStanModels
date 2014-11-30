@@ -59,10 +59,12 @@ subplot(2,3,6)
 MakeHist('R2',fit.extract.beta(:,1));
 %
 function MakeHist(name,dummy)
-    hist(dummy,100);
+    [counts xcenters] = hist(dummy,100);
+    bar(xcenters,counts,'hist');
+    area = sum(counts) * (xcenters(2)-xcenters(1));
     hold on;
-    [f bins] = ksdensity(dummy);
-    plot(bins,f,'r','linewidth',3);
-    title(sprintf('%s: mode: %.2g, mean: %.2g','bla',mode(dummy),mean(dummy)));
+    f = ksdensity(dummy,xcenters);
+    plot(xcenters,f*area,'r','linewidth',3);
+    title(sprintf('%s: mode: %.2g, mean: %.2g',mode(dummy),mean(dummy)));
 end
 end
