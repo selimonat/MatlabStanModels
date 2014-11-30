@@ -56,7 +56,7 @@ ci_down = norminv(.025,x_new*mean(fit.extract.beta)',mean(fit.extract.sigma_y));
 plot(x_new(:,2),[ci_up ci_down],'r')
 %
 subplot(2,3,6)
-MakeHist('R2',fit.extract.beta(:,1));
+MakeHist('R2',fit.extract.R2(:,1));
 %
 function MakeHist(name,dummy)
     [counts xcenters] = hist(dummy,100);
