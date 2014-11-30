@@ -15,14 +15,8 @@ parameters {
   real<lower=0,upper=1> udf;
 }
 
-transformed parameters {  
-  vector[N] ycenter;
-  vector[N] xcenter;
-  
+transformed parameters {    
   real dof;
-  # Used to compute r2
-  ycenter <- y - mean(y);
-  xcenter <- col(x,2) - mean(col(x,2));
 
   # used to compute DOF
   dof <- 1-log(1-udf);# Kruschke p. 353 discusses a way of setting a prior expressing our
@@ -37,18 +31,19 @@ model {
 
 generated quantities {
   vector[N_new] y_new;
+
   real rss;
   real<lower=0> totalss;
   real R2;
 
 
-   # use the model params to create independent x-y pairs as prediction
+  # use the model params to create independent x-y pairs as prediction
   for (i in 1:N_new){
     y_new[i] <- student_t_rng( dof,x_new[i] * beta, sigma_y);
   }
   # compute a distribution of r2 (http://www.stat.columbia.edu/~gelman/research/published/rsquared.pdf)
-  rss <- dot_self( ycenter - xcenter*beta[2] );
-  totalss <- dot_self(ycenter);
-  #
+  rss <- dot_self( y - x * beta );
+  totalss <- dot_self(y-mean(y));  
   R2 <- 1 - rss/totalss;
+  #
 }
