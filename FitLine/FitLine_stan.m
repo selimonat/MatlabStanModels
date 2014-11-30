@@ -1,5 +1,5 @@
 function [fit]=FitLine_stan(x,y,x_new,varargin)
-%[fit]=stan_fitline(x,y,varargin)
+%[fit]=FitLine_stan(x,y,x_new,varargin)
 %
 % you have to cd to the folder where the .stan model is located.
 % Y = X*[beta0 beta2]
