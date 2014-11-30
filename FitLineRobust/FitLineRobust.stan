@@ -6,25 +6,32 @@ data {
   int<lower=0> D;#d regressors
   matrix[N,D] x;#design matrix
   vector[N] y;#data
-  matrix[N_new,D] x_new;  
+  matrix[N_new,D] x_new;    
 }
 
-parameters {    
-  real dof;
+parameters {        
   vector[D] beta; // weights
-  real<lower=0>  sigma_y; // noise level
+  real<lower=0> sigma_y; // noise level
+  real<lower=0,upper=1> udf;
 }
 
-transformed parameters {
+transformed parameters {  
   vector[N] ycenter;
   vector[N] xcenter;
-
+  
+  real dof;
   # Used to compute r2
   ycenter <- y - mean(y);
-  xcenter <- (col(x,2) - mean(col(x,2)));
+  xcenter <- col(x,2) - mean(col(x,2));
+
+  # used to compute DOF
+  dof <- 1-log(1-udf);# Kruschke p. 353 discusses a way of setting a prior expressing our
+                      # believes on how much we think there are outliers in the data. 
+                      # This maps udf ranged [0 1] to dof [1, Y] where Y depends on the scale 
+                      # factor before the log term, which is here set to 1.
 }
 
-model { 
+model {     
   y ~ student_t( dof, x * beta , sigma_y ); // likelihood
 }
 
@@ -37,7 +44,7 @@ generated quantities {
 
    # use the model params to create independent x-y pairs as prediction
   for (i in 1:N_new){
-    y_new[i] <- normal_rng( x_new[i] * beta, sigma_y);
+    y_new[i] <- student_t_rng( dof,x_new[i] * beta, sigma_y);
   }
   # compute a distribution of r2 (http://www.stat.columbia.edu/~gelman/research/published/rsquared.pdf)
   rss <- dot_self( ycenter - xcenter*beta[2] );

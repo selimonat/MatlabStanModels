@@ -1,6 +1,6 @@
 function [fit]=FitLineRobust_stan(x,y,x_new,varargin)
 
-%[fit]=stan_fitline(x,y,varargin)
+%[[fit]=FitLineRobust_stan(x,y,x_new,varargin)
 %
 % you have to cd to the folder where the .stan model is located.
 % Y = X*[beta0 beta2]
@@ -12,15 +12,26 @@ function [fit]=FitLineRobust_stan(x,y,x_new,varargin)
 % X and X_new are supposed to have a column of ones.
 %
 % Example usage:
-% fit = FitLine_stan(x,y,x_new,'iter',10000);
+% fit = FitLineRobust_stan(x,y,x_new,'iter',10000);
 %
 % See also:
 % FitLine.m
+%
+% Notes:
+% DOF (nu) in the student_t diverges to +Inf when kept as a variable.
+% Because when outliers are observed the model believes that the noise
+% (sigma_y) is high. As such the model is underdetermined. Many examples
+% in the Stan group keep the DOF constant.
+% Kruschke p. 353 discusses a way of setting a prior expressing our
+% believes on how much we think there are outliers in the data.
+
+
 %%
 
 data = struct('x',x,'y',y,'N',size(x,1),'D',size(x,2),'x_new',x_new,'N_new',size(x_new,1));
-!rm output-* FitLine FitLine.cpp
-fit = stan('file','FitLineRobust.stan','data',data,'verbose',true,'iter',400,varargin{:});
+!rm output-* FitLineRobust FitLineRobust.cpp
+param0 = struct('dof',5,'beta',x\y,'sigma_y',std(y),'udf',0.5);
+fit = stan('file','FitLineRobust.stan','data',data,'verbose',true,'iter',400,varargin{:},'init',param0);
 fit.block();
 %%
 print(fit);
