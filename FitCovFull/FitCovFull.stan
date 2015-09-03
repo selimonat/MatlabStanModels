@@ -1,5 +1,4 @@
 # Fits a line to a set of points
-
 data {  
   
   int<lower=0> N;#n data points    
@@ -13,38 +12,57 @@ data {
   int<lower=0> N_new;#data points to be predicted 
   vector[N] x_new;#x and y data
   vector[N] y_new;#x and y data
+
 }
 
-parameters {    
+parameters {
   real ampG; // weights
   real ampC; // weights
-  real beta_diag; // weights
+  real<lower=0> beta_diag; // weights
   real beta_const; // weights
   real<lower=0,upper=20> std; // weights
   real<lower=0,upper=2> freq; // weights
   real<lower=0> sigma_y; // noise level  
+
+  real<lower=-5,upper=5> std_mu; // mu parameter for log-normal distribution of std
+  real<lower=0> std_std; // std parameter for log-normal distribution of std    
 }
 
-transformed parameters {
+transformed parameters {  
 }
+
 
 model {
-  for (n in 1:N)
-  z[n] ~ normal( xconst[n]*beta_const + xdiag[n]*beta_diag +  ampC*cos((x[n]-y[n])*freq)  + ampG*exp( -(((x[n]-2.3562)/std)^2 + ((y[n]-2.3562)/std)^2)), sigma_y ); // likelihood
+
+  std_std ~ gamma(.01,.01);
+  std ~ lognormal(std_mu,std_std);
+  
+  for (n in 1:N){
+    z[n] ~ normal(xconst[n]*beta_const + xdiag[n]*beta_diag +  ampC*cos((x[n]-y[n])*freq)  + ampG*exp( -(((x[n]-2.3562)/std)^2 + ((y[n]-2.3562)/std)^2)) , sigma_y ); // likelihood  
+  }
+
 }
+
 
 generated quantities {
   vector[N_new] z_new;
-  # real rss;
+  vector[N_new] dev;
+  
+  
+  # real rss; 
   # real<lower=0> totalss;
   # real R2;
 
 # use the model params to create independent x-y pairs as prediction
   for (i in 1:N_new){
-    z_new[i] <- normal_rng( xconst[i]*beta_const + xdiag[i]*beta_diag +  ampC*cos((x[i]-y[i])*freq)  + ampG*exp( -(((x[i]-2.3562)/std)^2 + ((y[i]-2.3562)/std)^2))  , sigma_y);
+z_new[i] <-                      normal_rng( xconst[i]*beta_const + xdiag[i]*beta_diag +  ampC*cos((x[i]-y[i])*freq)  + ampG*exp( -(((x[i]-2.3562)/std)^2 + ((y[i]-2.3562)/std)^2)), sigma_y);
+dev[i]<-normal_log(z[i] , xconst[i]*beta_const + xdiag[i]*beta_diag +  ampC*cos((x[i]-y[i])*freq)  + ampG*exp( -(((x[i]-2.3562)/std)^2 + ((y[i]-2.3562)/std)^2)) , sigma_y  );    
   }
+
+
 
   # rss <- dot_self( y - amp*exp( -(x[i,1]/std)^2 + (x[i,2]/std)^2) );
   # totalss <- dot_self(y - mean(y));
   # R2 <- 1 - rss/totalss;
 }
+
