@@ -33,7 +33,7 @@ transformed parameters {
 
 model {
   #Gaussian
-  std  ~ lognormal(0,0.5);
+  std  ~ lognormal(0.75,1);
   ampG ~ normal(0,.35);#normally distributed within -1 1.
   #Cosine
   ampC ~ normal(0,.7);#normally distributed within -2 2, coz peak2thorough difference can be maximally 2.
