@@ -16,8 +16,8 @@ data {
 }
 
 parameters {
-  real ampG; // weights
-  real ampC; // weights
+  real<lower=-1,upper=1> ampG; // weights
+  real<lower=-2,upper=2> ampC; // weights
   real<lower=0> beta_diag; // weights
   real beta_const; // weights
   real<lower=0,upper=20> std; // weights
@@ -36,6 +36,10 @@ model {
 
   std_std ~ gamma(.01,.01);
   std ~ lognormal(std_mu,std_std);
+
+  ampG ~ normal(0,.35);%normally distributed within -1 1.
+  ampC ~ normal(0,.7);%normally distributed within -2 2, coz peak2thorough difference can be maximally 2.
+  freq ~ normal(1,.1);%we want the cosinus component pretty much localize at 1 circle along the covmat if it exists at all. If not, ampC should get closer to zero.
   
   for (n in 1:N){
     z[n] ~ normal(xconst[n]*beta_const + xdiag[n]*beta_diag +  ampC*cos((x[n]-y[n])*freq)  + ampG*exp( -(((x[n]-2.3562)/std)^2 + ((y[n]-2.3562)/std)^2)) , sigma_y ); // likelihood  
