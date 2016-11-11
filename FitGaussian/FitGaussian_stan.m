@@ -25,7 +25,7 @@ function [fit]=FitGaussian_stan(x,y,x_new,varargin)
 %
 % EXAMPLE:
 %x   = [-135:45:180]';offset = 20;amp = 10;sd=60
-%y   = offset + amp*exp(-(x/sd).^2) + rand(8,1)*10;
+%y   = offset + amp*exp(-(x/sd).^2) + randn(8,1)*10;
 %fit = FitGaussian_stan(x,y,x);
 %%
 
