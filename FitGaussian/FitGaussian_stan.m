@@ -24,9 +24,9 @@ function [fit]=FitGaussian_stan(x,y,x_new,varargin)
 % adjusted R2 measure.
 %
 % EXAMPLE:
-%x   = [ones(100,1) randsample(linspace(1,10,1000),100,1)'];
-%y   = x*[12 2.5]'+rand(100,1);
-%fit = FitLine_stan(x,y,x);
+%x   = [-135:45:180]';offset = 20;amp = 10;sd=60
+%y   = offset + amp*exp(-(x/sd).^2) + rand(8,1)*10;
+%fit = FitGaussian_stan(x,y,x);
 %%
 
 data = struct('x',x,'y',y,'N',size(x,1),'D',size(x,2),'x_new',x_new,'N_new',size(x_new,1));
