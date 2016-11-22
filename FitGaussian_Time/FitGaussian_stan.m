@@ -18,9 +18,9 @@ if 0
     x      = [-135:45:180]';
     offset = linspace(10,10,T)';
     amp    = linspace(5,5,T)';
-    sd     = linspace(50,80,T)';    
+    sd     = linspace(20,150,T)';    
     for ti = 1:T
-        y(ti,:) = [offset(ti) + amp(ti)*exp(-(x/sd(ti)).^2) + randn(8,1)*1]';
+        y(ti,:) = [offset(ti) + amp(ti)*exp(-(x/sd(ti)).^2) + randn(8,1)*0]';
     end    
 end
 %%
