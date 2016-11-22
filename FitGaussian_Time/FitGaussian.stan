@@ -11,7 +11,7 @@ data {
 parameters {    
   vector[T] offset; 				//offset of the Gaussian
   vector[T] amp; 					// amplitude of the Gaussian
-  vector<lower=0,upper=180>[T] std; // stardard deviation of the Gaussian
+  vector<lower=0,upper=181>[T] std; // stardard deviation of the Gaussian
   vector<lower=0>[T]  sigma_y; 		// noise level  
 }
 
@@ -20,6 +20,9 @@ transformed parameters {
 
 model {  
   for (ti in 1:T){
+    std[ti]     ~ lognormal(4.5,1);
+    offset[ti]  ~ normal(0,10);
+    amp[ti] 	~ normal(0,10);
 	sigma_y[ti] ~ cauchy(0,5);
   for (ni in 1:N){
   y[ti,ni] ~ normal(  offset[ti]+amp[ti]*exp( -((x[ni]/std[ti])^2)) , sigma_y[ti] );

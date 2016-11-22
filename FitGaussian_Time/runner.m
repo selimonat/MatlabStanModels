@@ -4,7 +4,7 @@ x      = [-135:45:180]';
 offset = linspace(10,10,T)';
 amp    = linspace(10,10,T)';
 sd     = linspace(5,180,T)';
-sigma_y= repmat(0,1,50);
+sigma_y= repmat(2,1,50);
 for ti = 1:T
     y(ti,:) = [offset(ti) + amp(ti)*exp(-(x/sd(ti)).^2) + randn(8,1)*sigma_y(ti)]';
 end
@@ -21,7 +21,7 @@ init.std         = t2.fit_results{2}.params(:,2);
 init.offset      = t2.fit_results{2}.params(:,3);
 init.sigma_y     = t2.fit_results{2}.params(:,4);
 %
-fit = FitGaussian_stan(x,y,t,'iter',10000,'chains',4,'init',init);
+fit = FitGaussian_stan(x,y,t,'iter',5000,'chains',4,'init',init);
 %%
 figure;
 subplot(3,4,1);
@@ -54,14 +54,14 @@ plot(D,'o');
 title(sprintf('%3.5g',mean(D)))
 %
 subplot(3,4,9)
-imagesc(squeeze(median(fit.extract.y_new)));colorbar
+imagesc(squeeze(median(fit.extract.y_new)),[10 20]);colorbar
 title('median')
 subplot(3,4,10)
-imagesc(squeeze(mean(fit.extract.y_new)));colorbar
+imagesc(squeeze(mean(fit.extract.y_new)),[10 20]);colorbar
 title('mean')
 subplot(3,4,11)
-imagesc(squeeze(mode(fit.extract.y_new)));colorbar
+imagesc(squeeze(mode(fit.extract.y_new)),[10 20]);colorbar
 title('mode')
 subplot(3,4,12)
-imagesc(y);colorbar
+imagesc(y,[10 20]);colorbar
 title('data');
