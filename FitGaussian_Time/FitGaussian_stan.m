@@ -13,12 +13,12 @@ function [fit]=FitGaussian_stan(x,y,t,varargin)
 
 %%
 if 0
-    T      = 100; 
+    T      = 50; 
     t      = [1:T]';
     x      = [-135:45:180]';
     offset = linspace(10,10,T)';
     amp    = linspace(5,5,T)';
-    sd     = linspace(20,150,T)';    
+    sd     = linspace(5,180,T)';    
     for ti = 1:T
         y(ti,:) = [offset(ti) + amp(ti)*exp(-(x/sd(ti)).^2) + randn(8,1)*0]';
     end    

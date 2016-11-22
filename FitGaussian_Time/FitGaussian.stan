@@ -20,6 +20,7 @@ transformed parameters {
 
 model {  
   for (ti in 1:T){
+	sigma_y[ti] ~ cauchy(0,5);
   for (ni in 1:N){
   y[ti,ni] ~ normal(  offset[ti]+amp[ti]*exp( -((x[ni]/std[ti])^2)) , sigma_y[ti] );
 }}
