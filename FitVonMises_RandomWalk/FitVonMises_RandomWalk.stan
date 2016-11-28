@@ -28,19 +28,22 @@ model {
 	sigma_y ~ cauchy(0,5);
 	for (ti in 1:T){				
 		kappa[ti] ~ lognormal(0,1.5);		
+
 		offset[ti]~ normal(0,10);
+
 		amp[ti]   ~ normal(0,10);
+
 		for (ni in 1:N){  
 			y[ti,ni] ~ normal(  vonMises(x[ni],amp[ti],kappa[ti],offset[ti]) , sigma_y );
 	}}}
 
 generated quantities {
-  	real y_new[T,N];
-	real kappa_new;	
-	for (ti in 1:T){						
-		for (ni in 1:N){  
-			y_new[ti,ni] <- normal_rng(  vonMises(x[ni],amp[ti],kappa[ti],offset[ti]) , sigma_y );
-	}}
-	kappa_new <- lognormal_rng(0,1.5);
+  	#real y_new[T,N];
+	#real kappa_new;	
+	#for (ti in 1:T){						
+	#	for (ni in 1:N){  
+	#		y_new[ti,ni] <- normal_rng(  vonMises(x[ni],amp[ti],kappa[ti],offset[ti]) , sigma_y );
+	#}}
+	#kappa_new <- lognormal_rng(0,1.5);
 }
 
