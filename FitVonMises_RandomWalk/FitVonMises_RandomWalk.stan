@@ -23,34 +23,56 @@ parameters {
 	vector<lower=0>[T] sigma_amp; 				     	// noise level  
 	vector<lower=0>[T] sigma_kappa; 				     	// noise level  
 	vector<lower=0>[T] sigma_offset; 				     	// noise level  
-	
+	vector<lower=0>[T] sigma_damp; 				     	// noise level  
+	vector<lower=0>[T] sigma_dkappa; 				     	// noise level  
+	vector<lower=0>[T] sigma_doffset; 				     	// noise level  
+	vector[T] doffset;
+	vector[T] damp;
+	vector[T] dkappa;
 }
 
 transformed parameters {
 }
 
 model {  	
-	sigma_y      ~ cauchy(0,5);
+	
+	sigma_y       ~ cauchy(0,5);
+	sigma_doffset ~ normal(0,3); 
+	sigma_damp    ~ normal(0,3); 
+	sigma_doffset ~ normal(0,3); 
+	sigma_amp     ~ normal(0,3); 
+	sigma_kappa   ~ normal(0,3); 
+	sigma_offset  ~ normal(0,3); 
+
+	damp[1]       ~ normal(0,1); 
+	dkappa[1]     ~ normal(0,1); 
+	doffset[1]    ~ normal(0,1);
+	amp[1]	      ~ normal(0,1);
+	kappa[1]      ~ normal(0,1);
+	offset[1]     ~ normal(0,1); 
+
 	for (ti in 1:T-1){
 
-		sigma_offset[ti+1] ~ normal(sigma_offset[ti],2); 
-		sigma_amp[ti+1]    ~ normal(sigma_amp[ti],2); 
-		sigma_kappa[ti+1]  ~ normal(sigma_kappa[ti],2); 
 		#
-		offset[ti+1] ~  normal( offset[ti] , sigma_offset[ti]);
-		amp[ti+1]    ~  normal( amp[ti]    , sigma_amp[ti]);
-		kappa[ti+1]  ~  lognormal(kappa[ti], sigma_kappa[ti]);
+		damp[ti+1] 	~ normal(damp[ti],sigma_damp);
+		dkappa[ti+1] 	~ normal(dkappa[ti],sigma_dkappa);
+		doffset[ti+1] 	~ normal(doffset[ti],sigma_doffset);
+		#
+		offset[ti+1] 	~  normal( offset[ti]  + doffset[ti] , sigma_offset);
+		amp[ti+1]    	~  normal( amp[ti]     + damp[ti]    , sigma_amp);
+		kappa[ti+1]  	~  lognormal(kappa[ti] + dkappa[ti]  , sigma_kappa);
 		
 		for (ni in 1:N){  
 			y[ti+1,ni] ~ normal(  vonMises(x[ni],amp[ti+1],kappa[ti+1],offset[ti+1]) , sigma_y );
 }}}
+
 generated quantities {
-  	#real y_new[T,N];
+  	real y_new[T,N];
 	#real kappa_new;	
-	#for (ti in 1:T){						
-	#	for (ni in 1:N){  
-	#		y_new[ti,ni] <- normal_rng(  vonMises(x[ni],amp[ti],kappa[ti],offset[ti]) , sigma_y );
-	#}}
+	for (ti in 1:T-1){						
+		for (ni in 1:N){  
+			y_new[ti+1,ni] <- normal_rng(  vonMises(x[ni],amp[ti],kappa[ti],offset[ti]) , sigma_y );
+	}}
 	#kappa_new <- lognormal_rng(0,1.5);
 }
 
