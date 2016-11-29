@@ -20,32 +20,26 @@ parameters {
 	vector[T] amp; 								// amplitude of the Gaussian
 	vector<lower=0,upper=400>[T] kappa;         // stardard deviation of the Gaussian
 	real<lower=0> sigma_y; 				     	// noise level  
-	vector<lower=0,upper=400>[T] delta_kappa;
-	vector[T] delta_offset;
-	vector[T] delta_amp;
+	vector<lower=0>[T] sigma_amp; 				     	// noise level  
+	vector<lower=0>[T] sigma_kappa; 				     	// noise level  
+	vector<lower=0>[T] sigma_offset; 				     	// noise level  
 	
 }
 
 transformed parameters {
-	offset[1] = 1;
-	amp[1]    = 1;
-	kappa[1]  = 1;
 }
 
 model {  	
-
-	sigma_y ~ cauchy(0,5);
+	sigma_y      ~ cauchy(0,5);
 	for (ti in 1:T-1){
 
-		delta_kappa[ti]  ~ lognormal(0,1.5);		
-		delta_offset[ti] ~ normal(0,10);
-		delta_amp[ti]    ~ normal(0,10);
-
-#		print("s = ", ti);
-
-		offset[ti+1] =  normal( offset[ti] + delta_offset[ti],2);
-		amp[ti+1] 	 =  normal( amp[ti]    + delta_amp[ti],2);
-		kappa[ti+1]  =  lognormal(kappa[ti]  + delta_kappa[ti], 1.5);
+		sigma_offset[ti+1] ~ normal(sigma_offset[ti],2); 
+		sigma_amp[ti+1]    ~ normal(sigma_amp[ti],2); 
+		sigma_kappa[ti+1]  ~ normal(sigma_kappa[ti],2); 
+		#
+		offset[ti+1] ~  normal( offset[ti] , sigma_offset[ti]);
+		amp[ti+1]    ~  normal( amp[ti]    , sigma_amp[ti]);
+		kappa[ti+1]  ~  lognormal(kappa[ti], sigma_kappa[ti]);
 		
 		for (ni in 1:N){  
 			y[ti+1,ni] ~ normal(  vonMises(x[ni],amp[ti+1],kappa[ti+1],offset[ti+1]) , sigma_y );
