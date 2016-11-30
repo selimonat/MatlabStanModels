@@ -1,4 +1,4 @@
-function [fit]=FitVonMises_stan(x,y,t,varargin)
+function [fit]=FitVonMises_stan(x,y,varargin)
 %[fit]=FitVonMises_stan(x,y,x_new,varargin)
 %
 % you have to cd to the folder where the .stan model is located.
@@ -13,7 +13,8 @@ function [fit]=FitVonMises_stan(x,y,t,varargin)
 
 %%
 
-data = struct('x',x,'y',y,'t',t,'N',size(x,1),'T',size(t,1));
+data = struct('x',x,'y',y,'N',size(y,2),'T',size(y,1),'S',size(y,3));
+data
 fit = stan('file','FitVonMises.stan','data',data,'verbose',true,'iter',400,varargin{:});
 fit.block();
 %%
